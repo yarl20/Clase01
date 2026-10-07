@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Luxe Glow Cosmetics - Tienda de cosmética de lujo y cuidado facial natural. Productos formulados con ingredientes botánicos de alta eficacia.">
+  <title>Luxe Glow Cosmetics | Inicio</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <!-- Contenido principal -->
+  <main class="container flex-grow-1 py-4">
+
+    <!-- Hero Banner -->
+    <section class="hero-banner d-flex align-items-center">
+      <div class="hero-overlay">
+        <span class="hero-tag"><i class="fas fa-sparkles me-1"></i> Colección Primavera 2026</span>
+        <h1 class="hero-title">El Arte de la Nutrición &amp; El Brillo Natural</h1>
+        <p class="hero-subtitle">Descubre nuestra línea de cosmética de alta gama formulada para rejuvenecer, proteger y realzar tu piel cada día.</p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="#catalogo" class="btn btn-luxe-primary"><i class="fas fa-shopping-bag me-2"></i> Ver Catálogo</a>
+          <a href="nosotros.html" class="btn btn-luxe-outline">Saber Más</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Catálogo -->
+    <section id="catalogo" class="py-4 mb-5">
+      <div class="text-center mb-4">
+        <span class="text-uppercase text-gold fw-bold" style="letter-spacing:1.5px;font-size:.85rem">Nuestra Selección Elegante</span>
+        <h2 class="font-serif display-6 fw-bold text-burgundy">Productos Destacados</h2>
+        <div class="mx-auto" style="width:60px;height:3px;background:var(--color-gold);margin-top:10px;margin-bottom:20px;"></div>
+      </div>
+
+      <div class="d-flex justify-content-center flex-wrap gap-2 mb-5">
+        <button class="filter-pill active" data-filter="all">Todos los Productos</button>
+        <button class="filter-pill" data-filter="facial">Cuidado Facial</button>
+        <button class="filter-pill" data-filter="maquillaje">Maquillaje</button>
+        <button class="filter-pill" data-filter="fragancias">Fragancias</button>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-12 col-md-6 col-lg-3" data-category="facial">
+          <div class="product-card">
+            <div class="product-img-wrapper">
+              <span class="product-badge">Más Vendido</span>
+              <img src="assets/images/serum_rose.png" alt="Sérum Facial Rose Radiance" class="product-img">
+            </div>
+            <div class="product-body">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="product-category">Cuidado Facial</span>
+                <div class="product-rating"><i class="fas fa-star text-gold"></i> <span>5.0</span> <small class="text-muted">(124)</small></div>
+              </div>
+              <h3 class="product-title">Sérum Facial Rose Radiance</h3>
+              <p class="product-desc">Sérum concentrado con extractos puros de rosas botánicas y ácido hialurónico para una piel luminosa e hidratada.</p>
+              <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                <span class="product-price">$49.99</span>
+                <button class="btn btn-luxe-primary btn-sm px-3" onclick="Cart.add(101)"><i class="fas fa-plus me-1"></i> Añadir</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3" data-category="maquillaje">
+          <div class="product-card">
+            <div class="product-img-wrapper">
+              <span class="product-badge">Edición Lujo</span>
+              <img src="assets/images/lipstick_velvet.png" alt="Labial Velvet Gold Matte" class="product-img">
+            </div>
+            <div class="product-body">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="product-category">Maquillaje</span>
+                <div class="product-rating"><i class="fas fa-star text-gold"></i> <span>4.8</span> <small class="text-muted">(89)</small></div>
+              </div>
+              <h3 class="product-title">Labial Velvet Gold Matte</h3>
+              <p class="product-desc">Labial mate de textura sedosa de larga duración en estuche dorado bañado con pigmentos intensos.</p>
+              <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                <span class="product-price">$29.50</span>
+                <button class="btn btn-luxe-primary btn-sm px-3" onclick="Cart.add(102)"><i class="fas fa-plus me-1"></i> Añadir</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3" data-category="facial">
+          <div class="product-card">
+            <div class="product-img-wrapper">
+              <span class="product-badge">Orgánico</span>
+              <img src="assets/images/cream_hydra.png" alt="Crema Hidratante Hydra Glow" class="product-img">
+            </div>
+            <div class="product-body">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="product-category">Cuidado Facial</span>
+                <div class="product-rating"><i class="fas fa-star text-gold"></i> <span>4.9</span> <small class="text-muted">(96)</small></div>
+              </div>
+              <h3 class="product-title">Crema Hidratante Hydra Glow</h3>
+              <p class="product-desc">Crema nutritiva ultra ligera que restaura la barrera cutánea con péptidos naturales y acabado sedoso.</p>
+              <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                <span class="product-price">$58.00</span>
+                <button class="btn btn-luxe-primary btn-sm px-3" onclick="Cart.add(103)"><i class="fas fa-plus me-1"></i> Añadir</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3" data-category="fragancias">
+          <div class="product-card">
+            <div class="product-img-wrapper">
+              <span class="product-badge">Exclusivo</span>
+              <img src="assets/images/perfume_luxe.png" alt="Perfume Éclat D'Or Luxury" class="product-img">
+            </div>
+            <div class="product-body">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="product-category">Fragancias</span>
+                <div class="product-rating"><i class="fas fa-star text-gold"></i> <span>5.0</span> <small class="text-muted">(67)</small></div>
+              </div>
+              <h3 class="product-title">Perfume Éclat D'Or Luxury</h3>
+              <p class="product-desc">Fragancia envolvente con notas de jazmín real, ambar cálido y flor de azahar en frasco de cristal tallado.</p>
+              <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                <span class="product-price">$85.00</span>
+                <button class="btn btn-luxe-primary btn-sm px-3" onclick="Cart.add(104)"><i class="fas fa-plus me-1"></i> Añadir</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Banner informativo -->
+    <section class="row g-4 text-center my-5 py-4 info-banner">
+      <div class="col-md-4"><div class="p-3"><i class="fas fa-shipping-fast text-gold fs-1 mb-3"></i><h5 class="fw-bold text-burgundy">Envío Express Gratis</h5><p class="small text-muted mb-0">En compras superiores a $50 en todo el país.</p></div></div>
+      <div class="col-md-4"><div class="p-3"><i class="fas fa-award text-gold fs-1 mb-3"></i><h5 class="fw-bold text-burgundy">100% Dermatológico</h5><p class="small text-muted mb-0">Formulados clínicamente sin parabenos ni crueldad animal.</p></div></div>
+      <div class="col-md-4"><div class="p-3"><i class="fas fa-undo text-gold fs-1 mb-3"></i><h5 class="fw-bold text-burgundy">Garantía de Satisfacción</h5><p class="small text-muted mb-0">Devolución flexible hasta 30 días posteriores.</p></div></div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/index.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+/* Luxe Glow Cosmetics — index.css (solo estilos específicos de index.html, layout global en css/layout.css) */
+/* Hero — imagen original sin capa blanca que la deslave */
+.hero-banner{background:url('../assets/images/hero_banner.png') center/cover no-repeat;min-height:480px;border-radius:24px;overflow:hidden;box-shadow:var(--shadow-md);margin-bottom:3rem;position:relative}
+.hero-overlay{padding:4rem 3rem;max-width:600px;position:relative;z-index:1}
+.hero-tag{display:inline-block;font-size:.85rem;text-transform:uppercase;letter-spacing:2px;color:var(--color-burgundy);font-weight:700;background:rgba(255,255,255,.88);border:1px solid rgba(212,175,55,.4);padding:.35rem 1rem;border-radius:30px;margin-bottom:1.2rem;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.hero-title{font-size:2.8rem;font-weight:700;color:var(--color-burgundy);line-height:1.2;margin-bottom:1rem;text-shadow:0 1px 0 rgba(255,255,255,.9),0 2px 12px rgba(255,255,255,.85),0 4px 20px rgba(255,255,255,.6)}
+.hero-subtitle{font-size:1.1rem;color:#2B2525;margin-bottom:2rem;line-height:1.6;font-weight:500;text-shadow:0 1px 0 rgba(255,255,255,.95),0 2px 10px rgba(255,255,255,.8)}
+@media(max-width:768px){.hero-overlay{padding:2.5rem 1.5rem}.hero-title{font-size:2rem}}
+/* Filter Pills */
+.filter-pill{border:1px solid rgba(122,111,109,.2);background:var(--color-white);color:var(--color-text-dark);padding:.5rem 1.5rem;border-radius:30px;font-size:.9rem;font-weight:500;transition:var(--transition);cursor:pointer;margin:.25rem}
+.filter-pill:hover,.filter-pill.active{background:var(--color-burgundy);color:var(--color-white);border-color:var(--color-burgundy);box-shadow:var(--shadow-sm)}
+/* Product Cards */
+.product-card{background:var(--color-white);border:1px solid rgba(243,230,227,.8);border-radius:20px;overflow:hidden;box-shadow:var(--shadow-sm);transition:var(--transition);height:100%;display:flex;flex-direction:column}
+.product-card:hover{transform:translateY(-8px);box-shadow:var(--shadow-lg);border-color:rgba(212,175,55,.4)}
+.product-img-wrapper{position:relative;height:260px;overflow:hidden;background:var(--color-rose-dusty)}
+.product-img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+.product-card:hover .product-img{transform:scale(1.08)}
+.product-badge{position:absolute;top:15px;left:15px;background:rgba(255,255,255,.9);backdrop-filter:blur(5px);color:var(--color-burgundy);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:.35rem .85rem;border-radius:20px;border:1px solid rgba(212,175,55,.3)}
+.product-body{padding:1.5rem;display:flex;flex-direction:column;flex-grow:1}
+.product-category{font-size:.8rem;text-transform:uppercase;letter-spacing:1px;color:var(--color-gold);font-weight:600;margin-bottom:.3rem}
+.product-title{font-size:1.2rem;font-weight:700;color:var(--color-burgundy);margin-bottom:.5rem}
+.product-desc{font-size:.88rem;color:var(--color-text-muted);margin-bottom:1rem;flex-grow:1}
+.product-price{font-size:1.3rem;font-weight:700;color:var(--color-text-dark)}
+.product-rating{color:var(--color-gold);font-size:.85rem}
+/* Info banner */
+.info-banner{background:var(--color-white);border-radius:20px;box-shadow:var(--shadow-sm);border:1px solid rgba(243,230,227,.8)}
