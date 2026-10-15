@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "description": "Clave secreta HMAC-SHA utilizada para la firma y validación de tokens JWT."
+    },
+    {
+      "name": "jwt.expiration-ms",
+      "type": "java.lang.Long",
+      "description": "Tiempo de expiración del token JWT en milisegundos."
+    }
+  ]
+}

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COMPUNEX B2B — Diagrama Entidad-Relación</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --accent: #38bdf8;
+      --border: #334155;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge {
+      background: #0284c7;
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-weight: 500;
+    }
+    .controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    button {
+      background-color: #334155;
+      color: #fff;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    button:hover {
+      background-color: #475569;
+      border-color: var(--accent);
+    }
+    #diagram-container {
+      flex: 1;
+      width: 100%;
+      height: calc(100vh - 65px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
+    }
+    .mermaid {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mermaid svg {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+    }
+    .hint {
+      position: absolute;
+      bottom: 16px;
+      left: 20px;
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>
+      <span>COMPUNEX B2B — Modelo Relacional ER</span>
+      <span class="badge">PostgreSQL 15+</span>
+    </h1>
+    <div class="controls">
+      <button onclick="panZoomInstance.zoomIn()">➕ Acercar</button>
+      <button onclick="panZoomInstance.zoomOut()">➖ Alejar</button>
+      <button onclick="panZoomInstance.resetZoom(); panZoomInstance.center()">🔄 Centrar</button>
+    </div>
+  </header>
+
+  <div id="diagram-container">
+    <div class="mermaid" id="er-diagram">
+erDiagram
+    usuarios {
+        bigserial id PK
+        uuid uuid UK
+        varchar nombre
+        varchar correo UK
+        varchar hash_contrasena
+        enum rol
+        enum estado
+        text motivo_estado
+        timestamptz fecha_registro
+        timestamptz ultimo_acceso
+        timestamptz fecha_actualizacion
+    }
+
+    perfiles_cliente {
+        bigserial id PK
+        bigint usuario_id FK
+        varchar nombre_tienda
+        varchar telefono
+        varchar ciudad
+        varchar direccion
+        timestamptz fecha_creacion
+        timestamptz fecha_actualizacion
+    }
+
+    preferencias_cliente {
+        bigserial id PK
+        bigint perfil_cliente_id FK
+        timestamptz fecha_actualizacion
+    }
+    preferencias_cliente_categorias {
+        bigserial id PK
+        bigint preferencia_id FK
+        varchar categoria_id FK
+    }
+    preferencias_cliente_modelos {
+        bigserial id PK
+        bigint preferencia_id FK
+        enum modelo_comercial
+    }
+    preferencias_cliente_palabras {
+        bigserial id PK
+        bigint preferencia_id FK
+        varchar palabra_clave
+    }
+
+    perfiles_proveedor {
+        bigserial id PK
+        bigint usuario_id FK
+        varchar razon_social
+        varchar nombre_comercial
+        varchar telefono_contacto
+        varchar url_logo
+        varchar url_banner
+        varchar direccion
+        varchar ciudad
+        varchar anos_mercado
+        text descripcion
+        text politica_comercial
+        numeric calificacion
+        boolean verificado
+        boolean destacado
+        timestamptz fecha_creacion
+        timestamptz fecha_actualizacion
+    }
+    proveedor_marcas {
+        bigserial id PK
+        bigint proveedor_id FK
+        varchar marca
+    }
+    proveedor_especialidades {
+        bigserial id PK
+        bigint proveedor_id FK
+        varchar especialidad
+    }
+
+    solicitudes_proveedor {
+        bigserial id PK
+        varchar razon_social
+        varchar nombre_contacto
+        varchar correo
+        varchar telefono
+        varchar ciudad
+        varchar direccion
+        text marcas_texto
+        text mensaje
+        enum estado
+        text motivo_rechazo
+        bigint admin_revisor_id FK
+        timestamptz fecha_solicitud
+        timestamptz fecha_revision
+        bigint proveedor_creado_id FK
+    }
+
+    categorias {
+        varchar id PK
+        varchar nombre
+        varchar icono
+        varchar descripcion
+        enum estado
+        int total_productos
+        timestamptz fecha_creacion
+        timestamptz fecha_actualizacion
+    }
+
+    subcategorias {
+        bigserial id PK
+        varchar categoria_id FK
+        varchar nombre
+    }
+
+    productos {
+        bigserial id PK
+        uuid uuid UK
+        bigint proveedor_id FK
+        varchar categoria_id FK
+        varchar titulo
+        text descripcion
+        enum modelo_comercial
+        varchar tipo_formato
+        varchar unidades_por_paquete
+        varchar pedido_minimo
+        numeric precio_unitario_ref
+        numeric precio_total_ref
+        varchar moneda
+        text terminos_comerciales
+        enum estado
+        text motivo_moderacion
+        boolean es_recomendado
+        boolean es_promocionado
+        boolean tiene_oferta
+        timestamptz fecha_publicacion
+        timestamptz fecha_actualizacion
+        timestamptz fecha_eliminacion
+        bigint eliminado_por FK
+    }
+    producto_especificaciones {
+        bigserial id PK
+        bigint producto_id FK
+        varchar clave
+        varchar valor
+    }
+
+    imagenes_producto {
+        bigserial id PK
+        bigint producto_id FK
+        varchar url_imagen
+        smallint orden
+    }
+
+    ofertas {
+        bigserial id PK
+        bigint proveedor_id FK
+        bigint producto_id FK
+        varchar titulo_oferta
+        smallint porcentaje_descuento
+        numeric precio_original
+        numeric precio_promocional
+        varchar moneda
+        varchar vigencia
+        text terminos
+        enum estado
+        text motivo_moderacion
+        timestamptz fecha_creacion
+        timestamptz fecha_actualizacion
+        timestamptz fecha_eliminacion
+    }
+
+    planes_publicidad {
+        bigserial id PK
+        varchar nombre
+        smallint dias_duracion
+        numeric costo_usd
+        text descripcion
+        varchar espacios_asignados
+        boolean activo
+        boolean popular
+    }
+
+    promociones {
+        bigserial id PK
+        bigint proveedor_id FK
+        bigint producto_id FK
+        bigint plan_publicidad_id FK
+        varchar nombre_plan
+        numeric costo_usd
+        smallint dias_duracion
+        varchar espacios_asignados
+        timestamptz fecha_inicio
+        timestamptz fecha_fin
+        enum estado
+        text nota_moderacion
+        timestamptz fecha_creacion
+        timestamptz fecha_cancelacion
+    }
+
+    conversaciones {
+        bigserial id PK
+        uuid uuid UK
+        bigint cliente_id FK
+        bigint proveedor_id FK
+        bigint producto_referenciado_id FK
+        timestamptz fecha_ultimo_mensaje
+        varchar vista_previa_ultimo
+        int no_leidos_cliente
+        int no_leidos_proveedor
+        timestamptz fecha_creacion
+    }
+
+    mensajes {
+        bigserial id PK
+        bigint conversacion_id FK
+        bigint usuario_remitente_id FK
+        enum rol_remitente
+        text texto
+        boolean leido
+        timestamptz fecha_envio
+    }
+
+    contenido_plataforma {
+        bigserial id PK
+        varchar clave_contenido UK
+        jsonb contenido_json
+        timestamptz fecha_actualizacion
+        bigint admin_actualizador_id FK
+    }
+
+    registros_auditoria {
+        bigserial id PK
+        enum tipo_entidad
+        bigint id_entidad_original
+        varchar titulo_entidad
+        bigint usuario_eliminador_id FK
+        enum rol_eliminador
+        timestamptz fecha_eliminacion
+        text motivo
+        jsonb datos_snapshot
+        varchar estado
+    }
+
+    usuarios ||--o| perfiles_cliente : "tiene perfil"
+    usuarios ||--o| perfiles_proveedor : "tiene perfil"
+    perfiles_cliente ||--o| preferencias_cliente : "tiene preferencias"
+    preferencias_cliente ||--o{ preferencias_cliente_categorias : "categorías"
+    preferencias_cliente ||--o{ preferencias_cliente_modelos : "modelos"
+    preferencias_cliente ||--o{ preferencias_cliente_palabras : "palabras clave"
+    perfiles_proveedor ||--o{ proveedor_marcas : "marcas"
+    perfiles_proveedor ||--o{ proveedor_especialidades : "especialidades"
+    perfiles_cliente ||--o{ conversaciones : "inicia"
+    perfiles_proveedor ||--o{ conversaciones : "recibe"
+    perfiles_proveedor ||--o{ productos : "publica"
+    perfiles_proveedor ||--o{ ofertas : "crea"
+    perfiles_proveedor ||--o{ promociones : "contrata"
+    categorias ||--o{ productos : "clasifica"
+    categorias ||--o{ subcategorias : "tiene"
+    productos ||--o{ imagenes_producto : "imágenes"
+    productos ||--o{ producto_especificaciones : "especificaciones"
+    productos ||--o{ ofertas : "tiene ofertas"
+    productos ||--o{ promociones : "campañas"
+    productos }o--o{ conversaciones : "referenciado en"
+    planes_publicidad ||--o{ promociones : "define"
+    conversaciones ||--o{ mensajes : "contiene"
+    solicitudes_proveedor }o--o| perfiles_proveedor : "origina"
+    usuarios }o--o{ registros_auditoria : "ejecuta"
+    </div>
+  </div>
+
+  <div class="hint">💡 Usa la rueda del ratón para hacer zoom y arrastra para moverte libremente por el diagrama.</div>
+
+  <script>
+    let panZoomInstance;
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      er: {
+        useMaxWidth: false
+      }
+    });
+
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const svgElement = document.querySelector('#er-diagram svg');
+        if (svgElement) {
+          panZoomInstance = svgPanZoom(svgElement, {
+            zoomEnabled: true,
+            controlIconsEnabled: false,
+            fit: true,
+            center: true,
+            minZoom: 0.1,
+            maxZoom: 10,
+            zoomScaleSensitivity: 0.3
+          });
+        }
+      }, 600);
+    });
+  </script>
+</body>
+</html>
+

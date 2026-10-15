@@ -1,0 +1,1768 @@
+{
+  "info": {
+    "_postman_id": "c1a2b3c4-d5e6-4f7a-8b9c-0d1e2f3a4b5c",
+    "name": "COMPUNEX B2B - Wholesale Hardware API",
+    "description": "Colección completa y oficial para el Primer Avance de COMPUNEX B2B. Incluye autenticación JWT con guardado dinámico de token, CRUD de categorías y CRUD de productos de proveedor.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "proveedorToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "00. Autenticación y Sesión",
+      "item": [
+        {
+          "name": "[0.0] Registro de Proveedor Mayorista",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code es 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set(\"token\", jsonData.token);",
+                  "    pm.environment.set(\"token\", jsonData.token);",
+                  "    console.log(\"Token JWT de Proveedor guardado exitosamente:\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan Carlos Rivera\",\n  \"correo\": \"contacto.nuevo@innovapc.com\",\n  \"contrasena\": \"InnovaPass2026!\",\n  \"ruc\": \"20712345678\",\n  \"razonSocial\": \"Innova PC Mayoristas S.A.C.\",\n  \"nombreComercial\": \"Innova PC Wholesale\",\n  \"telefonoContacto\": \"+51 987 111 222\",\n  \"ciudad\": \"Lima\",\n  \"direccion\": \"Av. Garcilaso de la Vega 1348, Int. 201\",\n  \"anosMercado\": \"5 años\",\n  \"descripcion\": \"Especialistas en componentes, placas base y procesadores para ensamblaje.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Registra un nuevo usuario con rol PROVEEDOR y su perfil comercial asociado en una sola transacción, devolviendo un token JWT emitido."
+          }
+        },
+        {
+          "name": "[0.1] Login y Emisión de Token JWT",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code es 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set(\"token\", jsonData.token);",
+                  "    pm.environment.set(\"token\", jsonData.token);",
+                  "    console.log(\"Token JWT guardado exitosamente:\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"ventas.mayoristas@technova.com\",\n  \"contrasena\": \"PasswordMayorista123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Valida credenciales del proveedor y emite un token JWT Bearer válido por 24 horas."
+          },
+          "response": [
+            {
+              "name": "200 OK - Login Exitoso",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"correo\": \"ventas.mayoristas@technova.com\",\n  \"contrasena\": \"PasswordMayorista123!\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"token\": \"eyJhbGciOiJIUzUxMiJ9.examplePayloadToken...\",\n  \"tipoToken\": \"Bearer\",\n  \"expiraEnSegundos\": 86400\n}"
+            }
+          ]
+        },
+        {
+          "name": "[0.2] Rehidratar Sesión Activa (GET /me)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code es 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Valida el token Bearer activo y retorna los datos del usuario conectado."
+          },
+          "response": [
+            {
+              "name": "200 OK - Sesión Válida",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"correo\": \"ventas.mayoristas@technova.com\",\n  \"nombre\": \"TechNova Mayorista S.A.C.\",\n  \"rol\": \"PROVEEDOR\",\n  \"valido\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "[0.3] Cambio de Contraseña Corporativa",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code es 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contrasenaActual\": \"PasswordMayorista123!\",\n  \"nuevaContrasena\": \"NuevaClaveCorporativa2026*\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "password"
+              ]
+            },
+            "description": "Verifica la contraseña actual del usuario autenticado y guarda el nuevo hash BCrypt."
+          },
+          "response": [
+            {
+              "name": "200 OK - Contraseña Modificada",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"mensaje\": \"Contraseña actualizada exitosamente\",\n  \"fechaActualizacion\": \"2026-09-02T16:00:00Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01. Catálogo de Categorías",
+      "item": [
+        {
+          "name": "[1.1] Listar Categorías Activas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code es 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Retorna un arreglo de categorías\", function () {",
+                  "    var data = pm.response.json();",
+                  "    pm.expect(data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ]
+            },
+            "description": "Retorna la lista de todas las categorías activas en el catálogo."
+          },
+          "response": [
+            {
+              "name": "200 OK - Listado Categorías",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "[\n  {\n    \"id\": \"ram\",\n    \"nombre\": \"Memorias RAM\",\n    \"icono\": \"memory\",\n    \"descripcion\": \"Módulos de memoria DDR4 y DDR5 para PC y Servidores\",\n    \"estado\": \"ACTIVA\",\n    \"totalProductos\": 45\n  },\n  {\n    \"id\": \"ssd\",\n    \"nombre\": \"Almacenamiento SSD\",\n    \"icono\": \"storage\",\n    \"descripcion\": \"Unidades de estado sólido NVMe M.2 y SATA III\",\n    \"estado\": \"ACTIVA\",\n    \"totalProductos\": 38\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "[1.2] Detalle de Categoría y Subcategorías Técnicas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code es 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Contiene subcategorías técnicas\", function () {",
+                  "    var data = pm.response.json();",
+                  "    pm.expect(data.subcategorias).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/categories/ram",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "ram"
+              ]
+            },
+            "description": "Retorna el detalle de una categoría por su ID y la lista de subcategorías técnicas."
+          },
+          "response": [
+            {
+              "name": "200 OK - Detalle Categoría",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"id\": \"ram\",\n  \"nombre\": \"Memorias RAM\",\n  \"icono\": \"memory\",\n  \"descripcion\": \"Módulos de memoria DDR4 y DDR5 para PC y Servidores\",\n  \"estado\": \"ACTIVA\",\n  \"totalProductos\": 45,\n  \"subcategorias\": [\n    { \"id\": 1, \"nombre\": \"DDR5 Desktop\" },\n    { \"id\": 2, \"nombre\": \"DDR4 Desktop\" },\n    { \"id\": 3, \"nombre\": \"DDR5 SO-DIMM Laptop\" }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02. Catálogo de Productos (Proveedor CRUD Core)",
+      "item": [
+        {
+          "name": "[2.1] Listar Mis Productos (Paginado con Filtros)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code es 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Estructura paginada válida\", function () {",
+                  "    var data = pm.response.json();",
+                  "    pm.expect(data.contenido).to.be.an('array');",
+                  "    pm.expect(data).to.have.property('pagina');",
+                  "    pm.expect(data).to.have.property('totalElementos');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/providers/me/products?page=0&size=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "providers",
+                "me",
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": "Kingston",
+                  "description": "Búsqueda JPQL por nombre/título de producto",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retorna los productos publicados del proveedor autenticado de forma paginada."
+          },
+          "response": [
+            {
+              "name": "200 OK - Catálogo Paginado",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"contenido\": [\n    {\n      \"id\": 1,\n      \"uuid\": \"7c9e6679-7425-40de-944b-e07fc1f90ae7\",\n      \"titulo\": \"Memoria RAM Kingston Fury Beast 16GB DDR5 5600MHz\",\n      \"categoriaId\": \"ram\",\n      \"categoriaNombre\": \"Memorias RAM\",\n      \"modeloComercial\": \"DISTRIBUIDOR_OFICIAL\",\n      \"pedidoMinimo\": \"1 caja (10 unidades)\",\n      \"precioUnitarioRef\": 52.50,\n      \"precioTotalRef\": 525.00,\n      \"moneda\": \"USD\",\n      \"estado\": \"ACTIVO\",\n      \"esRecomendado\": true,\n      \"esPromocionado\": false,\n      \"urlImagenPrincipal\": \"https://img.compunex.com/products/ram-kingston-16gb-front.jpg\",\n      \"fechaPublicacion\": \"2026-09-02T10:30:00Z\"\n    }\n  ],\n  \"pagina\": 0,\n  \"tamano\": 10,\n  \"totalElementos\": 1,\n  \"totalPaginas\": 1,\n  \"esUltima\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "[2.2] Ficha Técnica de Producto (Specs + Fotos)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code es 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Ficha técnica con specs e imágenes\", function () {",
+                  "    var data = pm.response.json();",
+                  "    pm.expect(data.especificaciones).to.be.an('array');",
+                  "    pm.expect(data.imagenes).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/providers/me/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "providers",
+                "me",
+                "products",
+                "1"
+              ]
+            },
+            "description": "Retorna el detalle técnico completo del producto (atributos, ficha técnica de especificaciones y galería de imágenes)."
+          },
+          "response": [
+            {
+              "name": "200 OK - Ficha Técnica",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"id\": 1,\n  \"uuid\": \"7c9e6679-7425-40de-944b-e07fc1f90ae7\",\n  \"proveedorId\": 1,\n  \"proveedorRazonSocial\": \"TechNova Mayorista S.A.C.\",\n  \"categoriaId\": \"ram\",\n  \"titulo\": \"Memoria RAM Kingston Fury Beast 16GB DDR5 5600MHz\",\n  \"descripcion\": \"Módulo de memoria DDR5 de alto rendimiento optimizado para plataformas Intel XMP 3.0 y AMD EXPO.\",\n  \"modeloComercial\": \"DISTRIBUIDOR_OFICIAL\",\n  \"tipoFormato\": \"Caja Master x10 Blísteres\",\n  \"unidadesPorPaquete\": \"10 unidades\",\n  \"pedidoMinimo\": \"1 caja (10 unidades)\",\n  \"precioUnitarioRef\": 52.50,\n  \"precioTotalRef\": 525.00,\n  \"moneda\": \"USD\",\n  \"terminosComerciales\": \"Garantía de 3 años directa con fabricante.\",\n  \"estado\": \"ACTIVO\",\n  \"motivoModeracion\": null,\n  \"esRecomendado\": true,\n  \"esPromocionado\": false,\n  \"tieneOferta\": false,\n  \"especificaciones\": [\n    { \"clave\": \"Capacidad\", \"valor\": \"16 GB\" },\n    { \"clave\": \"Frecuencia\", \"valor\": \"5600 MHz\" },\n    { \"clave\": \"Latencia CAS\", \"valor\": \"CL36\" },\n    { \"clave\": \"Voltaje\", \"valor\": \"1.25V\" }\n  ],\n  \"imagenes\": [\n    { \"urlImagen\": \"https://img.compunex.com/products/ram-kingston-16gb-front.jpg\", \"orden\": 1 },\n    { \"urlImagen\": \"https://img.compunex.com/products/ram-kingston-16gb-angle.jpg\", \"orden\": 2 }\n  ],\n  \"fechaPublicacion\": \"2026-09-02T10:30:00Z\",\n  \"fechaActualizacion\": \"2026-09-02T10:30:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "[2.3] Crear Nuevo Producto Mayorista",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code es 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Producto creado con ID\", function () {",
+                  "    var data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('id');",
+                  "    pm.expect(data).to.have.property('uuid');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoriaId\": \"ram\",\n  \"titulo\": \"Memoria RAM Kingston Fury Beast 16GB DDR5 5600MHz\",\n  \"descripcion\": \"Módulo de memoria DDR5 de alto rendimiento optimizado para plataformas Intel XMP 3.0 y AMD EXPO. Ideal para ensamblajes corporativos y gaming de gama alta.\",\n  \"modeloComercial\": \"DISTRIBUIDOR_OFICIAL\",\n  \"tipoFormato\": \"Caja Master x10 Blísteres\",\n  \"unidadesPorPaquete\": \"10 unidades\",\n  \"pedidoMinimo\": \"1 caja (10 unidades)\",\n  \"precioUnitarioRef\": 52.50,\n  \"precioTotalRef\": 525.00,\n  \"moneda\": \"USD\",\n  \"terminosComerciales\": \"Garantía de 3 años directa con fabricante. Entrega en almacén Lima o envío a provincia con flete por pagar.\",\n  \"especificaciones\": [\n    { \"clave\": \"Capacidad\", \"valor\": \"16 GB\" },\n    { \"clave\": \"Frecuencia\", \"valor\": \"5600 MHz\" },\n    { \"clave\": \"Latencia CAS\", \"valor\": \"CL36\" },\n    { \"clave\": \"Voltaje\", \"valor\": \"1.25V\" }\n  ],\n  \"imagenes\": [\n    { \"urlImagen\": \"https://img.compunex.com/products/ram-kingston-16gb-front.jpg\", \"orden\": 1 },\n    { \"urlImagen\": \"https://img.compunex.com/products/ram-kingston-16gb-angle.jpg\", \"orden\": 2 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/providers/me/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "providers",
+                "me",
+                "products"
+              ]
+            },
+            "description": "Crea un nuevo producto en catálogo guardando automáticamente en cascada sus especificaciones técnicas e imágenes."
+          },
+          "response": [
+            {
+              "name": "201 Created - Producto Creado",
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"id\": 1,\n  \"uuid\": \"7c9e6679-7425-40de-944b-e07fc1f90ae7\",\n  \"proveedorId\": 1,\n  \"categoriaId\": \"ram\",\n  \"titulo\": \"Memoria RAM Kingston Fury Beast 16GB DDR5 5600MHz\",\n  \"precioUnitarioRef\": 52.50,\n  \"precioTotalRef\": 525.00,\n  \"moneda\": \"USD\",\n  \"estado\": \"ACTIVO\",\n  \"fechaPublicacion\": \"2026-09-02T10:30:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "[2.4] Actualizar Producto Existente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code es 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Memoria RAM Kingston Fury Beast 16GB DDR5 5600MHz (Lote 2026)\",\n  \"descripcion\": \"Descripción actualizada con nuevo stock certificado y empaque sellado.\",\n  \"pedidoMinimo\": \"5 unidades\",\n  \"precioUnitarioRef\": 49.90,\n  \"precioTotalRef\": 249.50,\n  \"terminosComerciales\": \"Precio rebajado por compra directa a partir de 5 piezas.\",\n  \"especificaciones\": [\n    { \"clave\": \"Capacidad\", \"valor\": \"16 GB\" },\n    { \"clave\": \"Frecuencia\", \"valor\": \"5600 MHz\" },\n    { \"clave\": \"Disipador\", \"valor\": \"Aluminio Negro Anodizado\" }\n  ],\n  \"imagenes\": [\n    { \"urlImagen\": \"https://img.compunex.com/products/ram-kingston-16gb-new.jpg\", \"orden\": 1 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/providers/me/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "providers",
+                "me",
+                "products",
+                "1"
+              ]
+            },
+            "description": "Actualiza la información comercial y las especificaciones técnicas del producto."
+          },
+          "response": [
+            {
+              "name": "200 OK - Producto Actualizado",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"id\": 1,\n  \"uuid\": \"7c9e6679-7425-40de-944b-e07fc1f90ae7\",\n  \"titulo\": \"Memoria RAM Kingston Fury Beast 16GB DDR5 5600MHz (Lote 2026)\",\n  \"precioUnitarioRef\": 49.90,\n  \"precioTotalRef\": 249.50,\n  \"estado\": \"ACTIVO\",\n  \"fechaActualizacion\": \"2026-09-02T11:00:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "[2.5] Cambiar Estado de Publicación",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code es 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"DESHABILITADO_POR_PROVEEDOR\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/providers/me/products/1/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "providers",
+                "me",
+                "products",
+                "1",
+                "status"
+              ]
+            },
+            "description": "Cambia el estado de visibilidad del producto en el catálogo (ACTIVO o DESHABILITADO_POR_PROVEEDOR)."
+          },
+          "response": [
+            {
+              "name": "200 OK - Estado Actualizado",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"id\": 1,\n  \"uuid\": \"7c9e6679-7425-40de-944b-e07fc1f90ae7\",\n  \"estadoAnterior\": \"ACTIVO\",\n  \"nuevoEstado\": \"DESHABILITADO_POR_PROVEEDOR\",\n  \"mensaje\": \"El producto ha sido deshabilitado del catálogo mayorista temporalmente\",\n  \"fechaActualizacion\": \"2026-09-02T11:15:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "[2.6] Eliminación Lógica de Producto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code es 204 No Content\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/providers/me/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "providers",
+                "me",
+                "products",
+                "1"
+              ]
+            },
+            "description": "Realiza la eliminación lógica del producto (Soft Delete) cambiando su estado a ELIMINADO_LOGICO."
+          },
+          "response": [
+            {
+              "name": "204 No Content - Eliminado",
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "plain",
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "08. Administración (Rol ADMIN)",
+      "item": [
+        {
+          "name": "[0.1b] Login Administrador",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code es 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set(\"token\", jsonData.token);",
+                  "    pm.environment.set(\"token\", jsonData.token);",
+                  "    console.log(\"Token JWT de Administrador guardado:\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"admin@compunex.com\",\n  \"contrasena\": \"AdminPassword2026!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Inicio de sesión para cuenta de Administrador del sistema."
+          }
+        },
+        {
+          "name": "[Admin A] Consultar productos de todos los proveedores",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code es 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/products?page=0&size=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": "RAM",
+                  "description": "Filtro opcional por nombre",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Permite al administrador consultar productos de cualquier proveedor con paginación y búsqueda."
+          }
+        },
+        {
+          "name": "[Admin B] Cambiar estado de publicación de cualquier producto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code es 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"OCULTO_POR_ADMIN\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/products/1/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "products",
+                "1",
+                "status"
+              ]
+            },
+            "description": "Permite al administrador activar u ocultar un producto sin limitación de propietario."
+          }
+        }
+      ]
+    },
+    {
+      "id": "b6559039-77db-47e5-95a3-16e10e89bac8",
+      "name": "06. Pruebas y Exposición - Lista de Cotejo (Seguridad, JWT, JPA, JPQL y Roles)",
+      "description": "Carpeta organizada y estructurada de 18 casos de prueba ordenados rigurosamente por los 10 criterios de evaluación de la Lista de Cotejo de Desarrollo Web Integrado (ATF2). Cubre Spring Security, JWT sin estado, PasswordEncoder BCrypt, control de roles RBAC (ADMIN vs PROVEEDOR), lecturas/escrituras/actualizaciones JPA en tablas relacionadas, consultas JPQL @Query y transacciones @Transactional.",
+      "item": [
+        {
+          "name": "06.1 - Seguridad, Roles y JWT (Criterios 5, 6, 7, 8, 9)",
+          "description": "Demostración de Spring Security 6, JWT sin estado (Stateless), BCryptPasswordEncoder, UserDetails en base de datos y control de accesos RBAC (ADMIN vs PROVEEDOR).",
+          "item": [
+            {
+              "id": "c257f0c4-6102-43d1-90a0-231d30e485f7",
+              "name": "[Caso 1 - Criterios 6, 7, 8] Registro de Proveedor en BD (BCrypt + Rol PROVEEDOR + JWT)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"Juan Carlos Rivera\",\n  \"correo\": \"proveedor.nuevo.postman@innovapc.com\",\n  \"contrasena\": \"InnovaPass2026!\",\n  \"ruc\": \"20712345678\",\n  \"razonSocial\": \"Innova PC Mayoristas S.A.C.\",\n  \"nombreComercial\": \"Innova PC Wholesale\",\n  \"telefonoContacto\": \"+51 987 111 222\",\n  \"ciudad\": \"Lima\",\n  \"direccion\": \"Av. Garcilaso de la Vega 1348, Int. 201\",\n  \"anosMercado\": \"5 a\\u00f1os\",\n  \"descripcion\": \"Especialistas en componentes, placas base y procesadores para ensamblaje.\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "register"
+                  ]
+                },
+                "description": "Criterios 6, 7 y 8. Endpoint público de registro corporativo. Guarda al Usuario con rol PROVEEDOR, cifra la contraseña con BCrypt en la base de datos PostgreSQL, persiste el PerfilProveedor en una sola transacción atómica y emite un token JWT firmado."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 201 Created', function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData.token) {",
+                      "    pm.collectionVariables.set('token', jsonData.token);",
+                      "    pm.environment.set('token', jsonData.token);",
+                      "    console.log('Token de Proveedor registrado guardado:', jsonData.token);",
+                      "}",
+                      "pm.test('Retorna datos correctos del proveedor y token JWT', function () {",
+                      "    pm.expect(jsonData.rol).to.eql('PROVEEDOR');",
+                      "    pm.expect(jsonData.tipoToken).to.eql('Bearer');",
+                      "    pm.expect(jsonData.token).to.be.a('string');",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "5c975848-5b0e-40df-9ad6-080180f15c30",
+              "name": "[Caso 2 - Criterios 6, 8] Login de Proveedor Mayorista (Autenticación BD + Emisión JWT)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"correo\": \"ventas.mayoristas@technova.com\",\n  \"contrasena\": \"PasswordMayorista123!\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "Criterios 6 y 8. Endpoint público de inicio de sesión. Spring Security valida las credenciales contra la BD mediante CustomUserDetailsService y BCryptPasswordEncoder. Tras el login exitoso devuelve un JWT firmado por 24 horas y lo guarda en la variable {{token}}."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 200 OK', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData.token) {",
+                      "    pm.collectionVariables.set('token', jsonData.token);",
+                      "    pm.environment.set('token', jsonData.token);",
+                      "    console.log('Token JWT guardado exitosamente:', jsonData.token);",
+                      "}",
+                      "pm.test('Token JWT es retornado con formato Bearer', function () {",
+                      "    pm.expect(jsonData.token).to.be.a('string');",
+                      "    pm.expect(jsonData.tipoToken).to.eql('Bearer');",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "9fb12d2e-3897-4c50-be47-09d5e592065a",
+              "name": "[Caso 3 - Criterios 7, 8] Login de Administrador (Autenticación BD + Rol ADMIN + Emisión JWT)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"correo\": \"admin@compunex.com\",\n  \"contrasena\": \"AdminPassword2026!\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "Criterios 7 y 8. Autenticación del usuario con rol ADMIN. Demuestra la existencia y manejo de múltiples roles en el sistema. Guarda el token en la variable {{adminToken}} para pruebas de supervisión administrativa."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 200 OK', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData.token) {",
+                      "    pm.collectionVariables.set('adminToken', jsonData.token);",
+                      "    pm.environment.set('adminToken', jsonData.token);",
+                      "    console.log('Token Administrador guardado en variable adminToken:', jsonData.token);",
+                      "}"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "e4b390f8-487e-40c4-825f-5821a2298a1a",
+              "name": "[Caso 4 - Criterios 5, 9] Validación Filtro JWT - Perfil /me con Token Bearer Válido (200 OK)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/me",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "me"
+                  ]
+                },
+                "description": "Criterios 5 y 9. El filtro JwtAuthenticationFilter intercepta la solicitud, extrae el token de la cabecera Authorization: Bearer, valida su firma HMAC-SHA512 y establece el SecurityContext. Retorna los datos del usuario autenticado."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 200 OK', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "var jsonData = pm.response.json();",
+                      "pm.test('Usuario autenticado correctamente con rol PROVEEDOR', function () {",
+                      "    pm.expect(jsonData.valido).to.be.true;",
+                      "    pm.expect(jsonData.rol).to.eql('PROVEEDOR');",
+                      "    pm.expect(jsonData.correo).to.be.a('string');",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "89f63927-ec67-44e5-b10a-5f4e98645b00",
+              "name": "[Caso 5 - Criterio 9] Validación Filtro JWT - Acceso Rechazado Sin Token (401 Unauthorized)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/me",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "me"
+                  ]
+                },
+                "description": "Criterio 9. Demuestra el bloqueo perimetral sin token. Intento de acceder a un endpoint protegido sin cabecera Authorization. Spring Security y HttpStatusEntryPoint responden inmediatamente con 401 Unauthorized."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 401 Unauthorized', function () {",
+                      "    pm.response.to.have.status(401);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "53756521-28d8-4351-9f42-6b47bbb29e6f",
+              "name": "[Caso 6 - Criterios 7, 9] Control de Roles RBAC - Acceso Rechazado por Rol Insuficiente (403 Forbidden)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/products",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "products"
+                  ]
+                },
+                "description": "Criterios 7 y 9. Demuestra la autorización por roles (RBAC). El usuario envía un token válido pero con rol PROVEEDOR a una ruta que exige hasRole('ADMIN'). Spring Security bloquea el acceso con código 403 Forbidden."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 403 Forbidden', function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "d6d8c873-cab5-4387-a522-a397351b7ec1",
+              "name": "[Caso 7 - Criterios 7, 9] Control de Roles RBAC - Acceso Autorizado como Administrador (200 OK)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{adminToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/products",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "products"
+                  ]
+                },
+                "description": "Criterios 7 y 9. Acceso concedido al Administrador. Se envía el token {{adminToken}} que contiene rol 'ADMIN'. La regla hasRole('ADMIN') se satisface y permite el acceso al catálogo global."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 200 OK', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "06.2 - JPA y Tablas Relacionadas (Criterios 1, 2, 3, 4)",
+          "description": "Demostración de lectura, escritura y actualización en tablas con relaciones @ManyToOne, @OneToMany, @OneToOne, cascade = CascadeType.ALL y transaccionalidad atómica @Transactional.",
+          "item": [
+            {
+              "id": "8dbca805-b3ea-4ed9-9493-31a63435c131",
+              "name": "[Caso 8 - Criterio 1 / Lectura 1 de 4] Categorías con Subcategorías y Contador de Productos",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/categories",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "categories"
+                  ]
+                },
+                "description": "Criterio 1 (Lectura 1/4). Endpoint público sin autenticación. Consulta la relación entre Categoría y Productos/Subcategorías en la base de datos, consolidando el conteo de stock activo."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 200 OK', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test('Retorna lista no vacía de categorías activas', function () {",
+                      "    var data = pm.response.json();",
+                      "    pm.expect(data).to.be.an('array');",
+                      "    pm.expect(data.length).to.be.above(0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "1020d0a4-e6a1-45da-924d-7c6011ee255f",
+              "name": "[Caso 9 - Criterio 1 / Lectura 2 de 4] Detalle de Categoría por Slug con Subcategorías Técnicas",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/categories/ram",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "categories",
+                    "ram"
+                  ]
+                },
+                "description": "Criterio 1 (Lectura 2/4). Consulta relacional de la entidad Categoria con su colección de subcategorías técnicas asociadas mediante navegación de clave foránea."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 200 OK', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test('Retorna datos de la categoría ram y sus subcategorías', function () {",
+                      "    var data = pm.response.json();",
+                      "    pm.expect(data.slug).to.eql('ram');",
+                      "    pm.expect(data.subcategorias).to.be.an('array');",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "79b4a6b5-aab0-4f57-a7be-e9c2a8511514",
+              "name": "[Caso 10 - Criterio 1 / Lectura 3 de 4] Catálogo de Productos del Proveedor con Categoría y Stock",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/providers/me/products?page=0&size=10",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "providers",
+                    "me",
+                    "products"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "0"
+                    },
+                    {
+                      "key": "size",
+                      "value": "10"
+                    }
+                  ]
+                },
+                "description": "Criterio 1 (Lectura 3/4). Lectura paginada que relaciona la entidad Producto con Categoria (@ManyToOne) y PerfilProveedor (@ManyToOne), garantizando aislamiento multi-tenant para el proveedor autenticado."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 200 OK', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test('Estructura paginada de productos retornada', function () {",
+                      "    var data = pm.response.json();",
+                      "    pm.expect(data).to.have.property('contenido');",
+                      "    pm.expect(data.contenido).to.be.an('array');",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "86025d53-ea06-413f-a2b2-a9c156016334",
+              "name": "[Caso 11 - Criterio 1 / Lectura 4 de 4] Ficha Técnica Completa con Imágenes y Especificaciones (OneToMany)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/providers/me/products/1",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "providers",
+                    "me",
+                    "products",
+                    "1"
+                  ]
+                },
+                "description": "Criterio 1 (Lectura 4/4). Lectura detallada de un producto que involucra múltiples tablas hijas relacionadas mediante @OneToMany: EspecificacionProducto (atributos técnicos clave-valor) e ImagenProducto (galería visual)."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 200 OK', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test('Producto contiene colecciones hijas de especificaciones e imágenes', function () {",
+                      "    var data = pm.response.json();",
+                      "    pm.expect(data.especificaciones).to.be.an('array');",
+                      "    pm.expect(data.imagenes).to.be.an('array');",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "a515a296-1b82-401c-aa4e-1f8d5510b6b3",
+              "name": "[Caso 12 - Criterios 2, 4 / Escritura 1 de 2] Transacción @Transactional: Crear Producto con Categoría, Specs e Imágenes",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"categoriaId\": \"ram\",\n  \"titulo\": \"Memoria RAM Corsair Vengeance 32GB DDR5 6000MHz\",\n  \"descripcion\": \"Kit de memoria de alta velocidad optimizado para plataformas AMD EXPO e Intel XMP 3.0.\",\n  \"modeloComercial\": \"DISTRIBUIDOR_OFICIAL\",\n  \"tipoFormato\": \"Caja Master x5 Blísteres\",\n  \"unidadesPorPaquete\": \"5 unidades\",\n  \"pedidoMinimo\": \"1 caja (5 unidades)\",\n  \"precioUnitarioRef\": 84.0,\n  \"precioTotalRef\": 420.0,\n  \"moneda\": \"USD\",\n  \"terminosComerciales\": \"Garantía de por vida directa con el fabricante. Factura electrónica.\",\n  \"especificaciones\": [\n    {\n      \"clave\": \"Capacidad\",\n      \"valor\": \"32 GB (2x16GB)\"\n    },\n    {\n      \"clave\": \"Frecuencia\",\n      \"valor\": \"6000 MHz\"\n    },\n    {\n      \"clave\": \"Latencia CAS\",\n      \"valor\": \"CL30\"\n    },\n    {\n      \"clave\": \"Voltaje\",\n      \"valor\": \"1.35V\"\n    }\n  ],\n  \"imagenes\": [\n    {\n      \"urlImagen\": \"https://img.compunex.com/products/corsair-ddr5-32gb-front.jpg\",\n      \"orden\": 1\n    },\n    {\n      \"urlImagen\": \"https://img.compunex.com/products/corsair-ddr5-32gb-box.jpg\",\n      \"orden\": 2\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/providers/me/products",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "providers",
+                    "me",
+                    "products"
+                  ]
+                },
+                "description": "Criterios 2 y 4 (Escritura 1/2 con @Transactional). Crea una nueva entidad Producto vinculándola a la Categoría existente ('ram') y al Proveedor autenticado, guardando atómicamente sus especificaciones e imágenes hijas en cascada (CascadeType.ALL) asegurando atomicidad."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 201 Created', function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "var jsonData = pm.response.json();",
+                      "pm.test('Producto creado con ID y relaciones persistidas', function () {",
+                      "    pm.expect(jsonData.id).to.be.a('number');",
+                      "    pm.expect(jsonData.categoriaId).to.eql('ram');",
+                      "    pm.expect(jsonData.especificaciones.length).to.be.above(0);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "b0fb81a2-b2b4-45a8-9482-655cad7c52b3",
+              "name": "[Caso 13 - Criterios 2, 4 / Escritura 2 de 2] Transacción @Transactional: Registro Proveedor Vinculando Usuario y Perfil",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"Carlos Gomez\",\n  \"correo\": \"carlos.gomez.ti@compunex.com\",\n  \"contrasena\": \"Password123!\",\n  \"ruc\": \"20601234567\",\n  \"razonSocial\": \"Comercializadora TI Global S.A.C.\",\n  \"nombreComercial\": \"TI Global Wholesale\",\n  \"telefonoContacto\": \"+51 912 345 678\",\n  \"ciudad\": \"Arequipa\",\n  \"direccion\": \"Calle Mercaderes 405\",\n  \"anosMercado\": \"4 a\\u00f1os\",\n  \"descripcion\": \"Distribuidor mayorista de perif\\u00e9ricos y componentes gamer.\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "register"
+                  ]
+                },
+                "description": "Criterios 2 y 4 (Escritura 2/2 con @Transactional). Método registrarProveedor decorado con @Transactional. Inserta un nuevo Usuario en la tabla usuarios y su PerfilProveedor vinculado en perfiles_proveedores dentro de una sola transacción atómica."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 201 Created', function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "var jsonData = pm.response.json();",
+                      "pm.test('Usuario y Perfil vinculados creados con éxito', function () {",
+                      "    pm.expect(jsonData.usuarioId).to.be.a('number');",
+                      "    pm.expect(jsonData.proveedorId).to.be.a('number');",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "ea85a83a-64e4-4daf-9c89-c780b698093a",
+              "name": "[Caso 14 - Criterios 3, 4 / Actualización 1 de 1] Transacción @Transactional: Actualizar Producto y Reasignar Categoría",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"categoriaId\": \"ram\",\n  \"titulo\": \"Memoria RAM Kingston Fury Beast 16GB DDR4 3200MHz Edición Especial\",\n  \"descripcion\": \"Módulo de memoria RAM DDR4 de alto rendimiento con disipador térmico negro mejorado.\",\n  \"modeloComercial\": \"DISTRIBUIDOR_OFICIAL\",\n  \"tipoFormato\": \"Caja Master x10 Blísteres\",\n  \"unidadesPorPaquete\": \"10 unidades\",\n  \"pedidoMinimo\": \"1 caja (10 unidades)\",\n  \"precioUnitarioRef\": 13.95,\n  \"precioTotalRef\": 139.5,\n  \"moneda\": \"USD\",\n  \"terminosComerciales\": \"Garantía extendida de 3 años directa con fabricante.\",\n  \"especificaciones\": [\n    {\n      \"clave\": \"Capacidad\",\n      \"valor\": \"16 GB\"\n    },\n    {\n      \"clave\": \"Frecuencia\",\n      \"valor\": \"3200 MHz\"\n    },\n    {\n      \"clave\": \"Tipo\",\n      \"valor\": \"DDR4\"\n    }\n  ],\n  \"imagenes\": [\n    {\n      \"urlImagen\": \"https://img.compunex.com/products/ram-kingston-16gb-special.jpg\",\n      \"orden\": 1\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/providers/me/products/1",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "providers",
+                    "me",
+                    "products",
+                    "1"
+                  ]
+                },
+                "description": "Criterios 3 y 4 (Actualización de entidades relacionadas). Modifica el producto existente, permitiendo cambiar su categoría asociada y actualizar en cascada sus especificaciones e imágenes dentro de un método de servicio anotado con @Transactional."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 200 OK', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "var jsonData = pm.response.json();",
+                      "pm.test('Producto actualizado con título y precio modificado', function () {",
+                      "    pm.expect(jsonData.precioMayorista).to.eql(139.50);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "06.3 - Consultas JPQL y Transición de Estados (Criterios 1, 4)",
+          "description": "Demostración de consultas JPQL personalizadas con @Query (búsqueda insensible a mayúsculas con LIKE LOWER, filtros multi-tenant y exclusión de bajas lógicas) y transiciones de estados de publicación.",
+          "item": [
+            {
+              "id": "43a63287-c3a4-4747-8187-ec7ee6fb22f7",
+              "name": "[Caso 15 - JPQL 1] Búsqueda Case-Insensitive JPQL por Proveedor (LIKE LOWER)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/providers/me/products?page=0&size=10&search=Kingston",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "providers",
+                    "me",
+                    "products"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "0"
+                    },
+                    {
+                      "key": "size",
+                      "value": "10"
+                    },
+                    {
+                      "key": "search",
+                      "value": "Kingston"
+                    }
+                  ]
+                },
+                "description": "Criterios 1 y 4 (JPQL). Ejecuta consulta personalizada con @Query en ProductoRepository: SELECT p FROM Producto p WHERE p.proveedor = :proveedor AND p.eliminado = false AND (LOWER(p.titulo) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.descripcion) LIKE LOWER(CONCAT('%', :search, '%'))). Demuestra filtrado insensible a mayúsculas."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 200 OK', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "var jsonData = pm.response.json();",
+                      "pm.test('Los productos retornados coinciden con la búsqueda Kingston', function () {",
+                      "    pm.expect(jsonData.contenido).to.be.an('array');",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "e0378c49-a0ac-4c68-a308-552ef22af71c",
+              "name": "[Caso 16 - JPQL 2] Supervisión Global Paginada JPQL para Administrador",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{adminToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/products?page=0&size=10&search=RAM",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "products"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "0"
+                    },
+                    {
+                      "key": "size",
+                      "value": "10"
+                    },
+                    {
+                      "key": "search",
+                      "value": "RAM"
+                    }
+                  ]
+                },
+                "description": "Criterios 1 y 7 (JPQL multi-proveedor). Consulta administrativa JPQL global sin restricción de proveedor que permite al Administrador supervisar todo el catálogo de hardware mayorista con búsqueda dinámica y paginación Pageable."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 200 OK', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "var jsonData = pm.response.json();",
+                      "pm.test('Catálogo global retornado en formato Page', function () {",
+                      "    pm.expect(jsonData.content).to.be.an('array');",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "55e76b1f-94d0-4a39-8633-2a3c30adb0cc",
+              "name": "[Caso 17 - Estado 1] Cambio de Estado de Publicación por Proveedor",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"estado\": \"INACTIVO\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/providers/me/products/1/status",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "providers",
+                    "me",
+                    "products",
+                    "1",
+                    "status"
+                  ]
+                },
+                "description": "Gestión del ciclo de vida del producto. El proveedor propietario pausa o activa la visibilidad de su producto (ACTIVO <-> INACTIVO) garantizando control de stock."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 200 OK', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "f915f8f0-d3ef-4893-87a3-689dea64d526",
+              "name": "[Caso 18 - Estado 2] Supervisión y Cambio de Estado Global por Administrador",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{adminToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"estado\": \"PENDIENTE_REVISION\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/products/1/status",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "products",
+                    "1",
+                    "status"
+                  ]
+                },
+                "description": "Supervisión administrativa de calidad de catálogo. El rol ADMIN puede modificar el estado de cualquier producto a PENDIENTE_REVISION, ACTIVO, INACTIVO o SUSPENDIDO sin requerir ser el proveedor propietario."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code es 200 OK', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
